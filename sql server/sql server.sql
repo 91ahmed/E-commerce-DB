@@ -153,10 +153,11 @@ GO
 -- --------------------
 CREATE TABLE genders
 (
-	GenderID TINYINT NOT NULL IDENTITY(1,1),
-	GenderName NVARCHAR(7) NOT NULL UNIQUE,
+	Serial INT NOT NULL IDENTITY(1,1),
+	GenderID INT NOT NULL UNIQUE,
+	GenderName NVARCHAR(20) NOT NULL,
 	
-	PRIMARY KEY (GenderID)
+	PRIMARY KEY (Serial)
 );
 
 GO
@@ -165,10 +166,11 @@ GO
 -- ------------------
 CREATE TABLE roles
 (
-	RoleID TINYINT NOT NULL IDENTITY(1,1),
-	RoleName NVARCHAR(150) NOT NULL UNIQUE,
+	Serial INT NOT NULL IDENTITY(1,1),
+	RoleID INT NOT NULL UNIQUE,
+	RoleName NVARCHAR(200) NOT NULL,
 	
-	PRIMARY KEY (RoleID)
+	PRIMARY KEY (Serial)
 );
 
 GO
@@ -177,19 +179,20 @@ GO
 -- ------------------
 CREATE TABLE users
 (
-	UserID INT NOT NULL IDENTITY(1,1),
+	Serial INT NOT NULL IDENTITY(1,1),
+	UserID INT NOT NULL UNIQUE,
 	UserFirstName NVARCHAR(20) NOT NULL,
 	UserLastName NVARCHAR(20) NOT NULL,
-	UserEmail NVARCHAR(80) NOT NULL UNIQUE,
+	UserEmail NVARCHAR(100) NOT NULL UNIQUE,
 	UserPassword CHAR(60) NOT NULL, -- values in this column should be encrypted or hashed
 	UserBirthDate DATE NOT NULL, -- format (yyyy-mm-dd)
-	UserGender TINYINT NOT NULL,
+	UserGender INT NOT NULL,
 	UserStatus BIT NOT NULL DEFAULT 0, -- 0 (not active) | 1 (active)
 	UserCreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
 	
 	FOREIGN KEY (UserGender) REFERENCES dbo.genders (GenderID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (UserID)
+	PRIMARY KEY (Serial)
 );
 
 GO
@@ -198,14 +201,14 @@ GO
 -- ------------------------
 CREATE TABLE users_roles
 (
-	UserRoleID INT NOT NULL IDENTITY(1,1),
+	Serial INT NOT NULL IDENTITY(1,1),
 	UserID INT NOT NULL,
-	RoleID TINYINT NOT NULL,
+	RoleID INT NOT NULL,
 	
 	FOREIGN KEY (UserID) REFERENCES dbo.users (UserID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (RoleID) REFERENCES dbo.roles (RoleID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (UserRoleID)
+	PRIMARY KEY (Serial)
 );
 
 GO
@@ -214,18 +217,19 @@ GO
 -- ----------------------
 CREATE TABLE customers
 (
-	CustomerID INT NOT NULL IDENTITY(1,1),
+	Serial INT NOT NULL IDENTITY(1,1),
+	CustomerID INT NOT NULL UNIQUE,
 	CustomerFirstName NVARCHAR(20) NOT NULL,
 	CustomerLastName NVARCHAR(20) NOT NULL,
-	CustomerEmail NVARCHAR(80) NOT NULL UNIQUE,
+	CustomerEmail NVARCHAR(100) NOT NULL UNIQUE,
 	CustomerPassword CHAR(60) NOT NULL, -- values in this column should be encrypted or hashed
 	CustomerBirthDate DATE NOT NULL, -- format (yyyy-mm-dd)
-	CustomerGender TINYINT NOT NULL,
+	CustomerGender INT NOT NULL,
 	CustomerCreatedDate DATETIME NOT NULL DEFAULT GETDATE(),
 	
 	FOREIGN KEY (CustomerGender) REFERENCES dbo.genders (GenderID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (CustomerID)
+	PRIMARY KEY (Serial)
 );
 
 GO
@@ -234,10 +238,11 @@ GO
 -- -------------------------
 CREATE TABLE manufactures
 (
-	ManufactureID SMALLINT NOT NULL IDENTITY(1,1),
-	ManufactureName NVARCHAR(100) NOT NULL UNIQUE,
+	Serial INT NOT NULL IDENTITY(1,1),
+	ManufactureID INT NOT NULL UNIQUE,
+	ManufactureName NVARCHAR(100) NOT NULL,
 	
-	PRIMARY KEY (ManufactureID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -247,10 +252,11 @@ GO
 -- -----------------------------
 CREATE TABLE categories_kinds
 (
-	CategoryKindID SMALLINT NOT NULL IDENTITY(1,1),
-	CategoryKindName NVARCHAR(30) NOT NULL UNIQUE,
+	Serial INT NOT NULL IDENTITY(1,1),
+	CategoryKindID INT NOT NULL UNIQUE,
+	CategoryKindName NVARCHAR(50) NOT NULL,
 	
-	PRIMARY KEY (CategoryKindID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -260,13 +266,14 @@ GO
 -- -----------------------
 CREATE TABLE categories
 (
-	CategoryID SMALLINT NOT NULL IDENTITY(1,1),
+	Serial INT NOT NULL IDENTITY(1,1),
+	CategoryID INT NOT NULL UNIQUE,
 	CategoryName NVARCHAR(200) NOT NULL,
-	CategoryKind SMALLINT NOT NULL,
+	CategoryKind INT NOT NULL,
 	
 	FOREIGN KEY (CategoryKind) REFERENCES dbo.categories_kinds (CategoryKindID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (CategoryID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -276,10 +283,11 @@ GO
 -- ------------------
 CREATE TABLE sizes
 (
-	SizeID SMALLINT NOT NULL IDENTITY(1,1),
-	SizeName NVARCHAR(50) NOT NULL UNIQUE,
+	Serial INT NOT NULL IDENTITY(1,1),
+	SizeID INT NOT NULL UNIQUE,
+	SizeName NVARCHAR(100) NOT NULL,
 	
-	PRIMARY KEY (SizeID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -289,11 +297,12 @@ GO
 -- -------------------
 CREATE TABLE colors
 (
-	ColorID SMALLINT NOT NULL IDENTITY(1,1),
-	ColorName NVARCHAR(50) NOT NULL UNIQUE,
-	ColorCode CHAR(7) NOT NULL UNIQUE DEFAULT '#FFFFFF',
+	Serial INT NOT NULL IDENTITY(1,1),
+	ColorID INT NOT NULL UNIQUE,
+	ColorName NVARCHAR(50) NOT NULL,
+	ColorCode CHAR(7) NOT NULL DEFAULT '#FFFFFF',
 	
-	PRIMARY KEY (ColorID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -303,14 +312,15 @@ GO
 -- ---------------------
 CREATE TABLE products
 (
-	ProductID INT NOT NULL IDENTITY(1,1),
+	Serial INT NOT NULL IDENTITY(1,1),
+	ProductID INT NOT NULL UNIQUE,
 	ProductSku CHAR(12) NOT NULL UNIQUE,
 	ProductName NVARCHAR(200) NOT NULL,
 	ProductPrice DECIMAL(9,2) NOT NULL DEFAULT 0,
 	ProductDiscount SMALLINT NOT NULL DEFAULT 0,
 	ProductQuantity SMALLINT NOT NULL DEFAULT 1,
-	ProductManufacture SMALLINT NOT NULL,
-	ProductCategory SMALLINT NOT NULL,
+	ProductManufacture INT NOT NULL,
+	ProductCategory INT NOT NULL,
 	ProductDescription TEXT NULL,
 	ProductView INT NOT NULL DEFAULT 0,
 	ProductUser INT NOT NULL,
@@ -320,7 +330,7 @@ CREATE TABLE products
 	FOREIGN KEY (ProductCategory) REFERENCES dbo.categories (CategoryID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (ProductUser) REFERENCES dbo.users (UserID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (ProductID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -330,13 +340,13 @@ GO
 -- ----------------------------
 CREATE TABLE products_images
 (
-	ProductImageID INT NOT NULL IDENTITY(1,1),
-	ImageName VARCHAR(200) NOT NULL,
+	Serial INT NOT NULL IDENTITY(1,1),
+	ImageName NVARCHAR(200) NOT NULL,
 	ProductID INT NOT NULL,
 	
 	FOREIGN KEY (ProductID) REFERENCES dbo.products (ProductID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (ProductImageID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -346,14 +356,14 @@ GO
 -- ---------------------------
 CREATE TABLE products_sizes
 (
-	ProductSizeID INT NOT NULL IDENTITY(1,1),
-	SizeID SMALLINT NOT NULL,
+	Serial INT NOT NULL IDENTITY(1,1),
+	SizeID INT NOT NULL,
 	ProductID INT NOT NULL,
 	
 	FOREIGN KEY (SizeID) REFERENCES dbo.sizes (SizeID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (ProductID) REFERENCES dbo.products (ProductID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (ProductSizeID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -363,14 +373,14 @@ GO
 -- ----------------------------
 CREATE TABLE products_colors
 (
-	ProductColorID INT NOT NULL IDENTITY(1,1),
-	ColorID SMALLINT NOT NULL,
+	Serial INT NOT NULL IDENTITY(1,1),
+	ColorID INT NOT NULL,
 	ProductID INT NOT NULL,
 	
 	FOREIGN KEY (ColorID) REFERENCES dbo.colors (ColorID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (ProductID) REFERENCES dbo.products (ProductID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (ProductColorID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -380,7 +390,7 @@ GO
 -- --------------------------
 CREATE TABLE shopping_cart
 (
-	CartID INT NOT NULL IDENTITY(1,1),
+	Serial INT NOT NULL IDENTITY(1,1),
 	CustomerID INT NOT NULL,
 	ProductID INT NOT NULL,
 	CartDate DATETIME NOT NULL DEFAULT GETDATE(),
@@ -388,7 +398,7 @@ CREATE TABLE shopping_cart
 	FOREIGN KEY (CustomerID) REFERENCES dbo.customers (CustomerID),
 	FOREIGN KEY (ProductID) REFERENCES dbo.products (ProductID),
 	
-	PRIMARY KEY (CartID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup1";
 
@@ -398,14 +408,15 @@ GO
 -- ----------------------
 CREATE TABLE countries
 (
-	CountryID SMALLINT NOT NULL,
+	Serial INT NOT NULL IDENTITY(1,1),
+	CountryID INT NOT NULL UNIQUE,
 	CountryCode NVARCHAR(20) NOT NULL,
 	CountryCodeAlpha2 CHAR(2) NOT NULL,
 	CountryCodeAlpha3 CHAR(3) NOT NULL,
 	CountryNameEn NVARCHAR(200) NOT NULL,
 	CountryNameAr NVARCHAR(200) NOT NULL,
 	
-	PRIMARY KEY (CountryID)
+	PRIMARY KEY (Serial)
 );
 
 GO
@@ -414,10 +425,11 @@ GO
 -- -------------------
 CREATE TABLE orders
 (
-	OrderID INT NOT NULL,
+	Serial INT NOT NULL IDENTITY(1,1),
+	OrderID INT NOT NULL UNIQUE,
 	CustomerID INT NOT NULL,
 	CustomerName NVARCHAR(100) NOT NULL,
-	CustomerCountry SMALLINT NOT NULL,
+	CustomerCountry INT NOT NULL,
 	CustomerCity NVARCHAR(100) NOT NULL,
 	CustomerRegion NVARCHAR(100) NOT NULL,
 	CustomerZip NVARCHAR(10) NULL,
@@ -428,7 +440,7 @@ CREATE TABLE orders
 	FOREIGN KEY (CustomerID) REFERENCES dbo.customers (CustomerID) ON DELETE CASCADE ON UPDATE CASCADE,
 	FOREIGN KEY (CustomerCountry) REFERENCES dbo.countries (CountryID) ON DELETE CASCADE ON UPDATE CASCADE,
 	
-	PRIMARY KEY (OrderID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup2";
 
@@ -438,16 +450,16 @@ GO
 -- ---------------------------
 CREATE TABLE orders_details
 (
-	OrderDetailID INT NOT NULL IDENTITY(1,1),
+	Serial INT NOT NULL IDENTITY(1,1),
 	OrderID INT NOT NULL,
 	ProductID INT NOT NULL,
-	Quantity INT NOT NULL,
+	Quantity SMALLINT NOT NULL,
 	UnitPrice DECIMAL(9,2) NOT NULL,
 	Discount SMALLINT NOT NULL DEFAULT 0,
 	
 	FOREIGN KEY (OrderID) REFERENCES dbo.orders (OrderID),
 	FOREIGN KEY (ProductID) REFERENCES dbo.products (ProductID),
 	
-	PRIMARY KEY (OrderDetailID)
+	PRIMARY KEY (Serial)
 )
 ON "FileGroup2";
